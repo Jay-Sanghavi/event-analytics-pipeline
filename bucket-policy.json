@@ -1,0 +1,20 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowCrossAccountListGet",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::381492124254:root"
+      },
+      "Action": [
+        "s3:ListBucket",
+        "s3:GetObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::capstone-analytics-jsanghvi-778274425587",
+        "arn:aws:s3:::capstone-analytics-jsanghvi-778274425587/*"
+      ]
+    }
+  ]
+}
