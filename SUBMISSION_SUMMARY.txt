@@ -1,0 +1,211 @@
+================================================================================
+CAPSTONE PROJECT - FINAL SUBMISSION SUMMARY
+Student: Jay Sanghvi (jsanghvi)
+Date: December 8, 2025
+================================================================================
+
+DELIVERABLE 1: Extended CloudFormation Template
+------------------------------------------------
+File: capstone-starter.cfn.yaml
+Location: /Users/jaysmacbook/Documents/Autumn25/capstone/capstone-starter.cfn.yaml
+
+Resources Added:
+- AnalyticsOutputBucket (S3 bucket for processed data)
+- BronzeDatabase, SilverDatabase, GoldDatabase (Glue databases)
+- 5 Gold table definitions (conversion_funnel, hourly_revenue, top_products, 
+  category_performance, user_activity)
+- All required CloudFormation outputs
+
+Status: ✅ READY FOR DEPLOYMENT
+
+
+DELIVERABLE 2: Glue ETL Script with Incremental Processing
+-----------------------------------------------------------
+File: capstone_glue_job.py
+Local: /Users/jaysmacbook/Documents/Autumn25/capstone/capstone_glue_job.py
+S3 URI: s3://capstone-analytics-jsanghvi-778274425587/glue-scripts/capstone_glue_job.py
+Glue Job: capstone-etl-jsanghvi (deployed and running)
+
+Incremental Processing:
+- Implementation: AWS Glue Job Bookmarks
+- Enabled via: --job-bookmark-option: job-bookmark-enable
+- Code markers: transformation_ctx="datasource_bronze", job.commit()
+- Verification: Run 1: 219s (all files) | Run 2: 176s (new files only)
+- Result: ✅ No reprocessing of historical data
+
+Architecture:
+- Bronze: Raw JSON → Parquet (append mode)
+- Silver: Cleaned + deduplicated events (overwrite with complete data)
+- Gold: Pre-aggregated analytics (overwrite)
+
+Status: ✅ DEPLOYED AND VERIFIED
+
+
+DELIVERABLE 3: S3 URI of Analytical Dataset
+--------------------------------------------
+Base URI: s3://capstone-analytics-jsanghvi-778274425587/gold/
+
+Gold Tables:
+1. conversion_funnel/     - Product-level funnel metrics
+2. hourly_revenue/        - Revenue by hour
+3. top_products/          - Most viewed products
+4. category_performance/  - Daily category metrics
+5. user_activity/         - User engagement metrics
+
+Data Format: Snappy-compressed Parquet
+Events Processed: ~1.25M unique events
+Databases: bronze_jsanghvi, silver_jsanghvi, gold_jsanghvi
+
+Status: ✅ DATA AVAILABLE AND QUERYABLE
+
+
+DELIVERABLE 4: S3 URI of Queries File
+--------------------------------------
+URI: s3://capstone-analytics-jsanghvi-778274425587/queries.sql
+Local: /Users/jaysmacbook/Documents/Autumn25/capstone/queries.sql
+
+Queries Included:
+1. Conversion Funnel (per product: views → cart → purchase rates)
+2. Hourly Revenue (total revenue by hour)
+3. Top 10 Products (most frequently viewed)
+4. Category Performance (daily event counts by category)
+5. User Activity (unique users and sessions per day)
+
+All queries tested via Athena and verified working.
+
+Status: ✅ UPLOADED AND TESTED
+
+
+DELIVERABLE 5: Blog Post (Google Doc)
+--------------------------------------
+Status: ❌ NOT STARTED
+
+Requirements:
+- 1500-2500 words
+- Architecture diagram (embedded as image)
+- Design rationale and alternatives considered
+- Technical accuracy and portfolio-ready writing
+- Google Doc with "Anyone with link can comment" access
+
+Status: ❌ PENDING
+
+
+================================================================================
+GRADING ESTIMATE
+================================================================================
+
+Code Section (50%):
+  ✅ CloudFormation deploys successfully
+  ✅ Incremental processing verified (bookmarks enabled & working)
+  ✅ All 5 queries execute successfully
+  Estimated Score: 48/50
+
+Blog Post Section (50%):
+  ❌ Not started
+  Estimated Score: 0/50
+
+Total Estimated: 48/100 (Technical work complete, documentation pending)
+
+
+================================================================================
+AWS RESOURCES DEPLOYED
+================================================================================
+
+CloudFormation Stack: capstone-jsanghvi (us-west-2)
+
+S3 Buckets:
+- capstone-events-jsanghvi-778274425587 (source events)
+- capstone-analytics-jsanghvi-778274425587 (processed data)
+
+Lambda Functions:
+- capstone-event-generator-jsanghvi (generates 500k-750k events every 5 min)
+
+Glue Resources:
+- Databases: bronze_jsanghvi, silver_jsanghvi, gold_jsanghvi
+- Job: capstone-etl-jsanghvi (bookmarks enabled)
+- Tables: 1 bronze, 1 silver, 5 gold
+
+EventBridge:
+- Schedule: capstone-event-generator-schedule-jsanghvi (rate: 5 minutes)
+
+
+================================================================================
+FILES TO SUBMIT
+================================================================================
+
+1. capstone-starter.cfn.yaml
+   └─ Location: /Users/jaysmacbook/Documents/Autumn25/capstone/
+
+2. capstone_glue_job.py
+   └─ Location: /Users/jaysmacbook/Documents/Autumn25/capstone/
+   └─ Also at: s3://capstone-analytics-jsanghvi-778274425587/glue-scripts/
+
+3. S3 URI of analytical dataset:
+   └─ s3://capstone-analytics-jsanghvi-778274425587/gold/
+
+4. S3 URI of queries.sql:
+   └─ s3://capstone-analytics-jsanghvi-778274425587/queries.sql
+
+5. Google Doc link:
+   └─ [TO BE CREATED]
+
+
+================================================================================
+VERIFICATION COMMANDS FOR GRADING
+================================================================================
+
+# Deploy CloudFormation
+aws cloudformation create-stack \
+  --stack-name capstone-jsanghvi \
+  --template-body file://capstone-starter.cfn.yaml \
+  --parameters ParameterKey=StudentId,ParameterValue=jsanghvi \
+  --region us-west-2
+
+# Verify incremental processing
+aws glue start-job-run --job-name capstone-etl-jsanghvi --region us-west-2
+aws lambda invoke --function-name capstone-event-generator-jsanghvi output.json
+aws glue start-job-run --job-name capstone-etl-jsanghvi --region us-west-2
+# Second run should be faster and only process new files
+
+# Run queries
+aws s3 cp s3://capstone-analytics-jsanghvi-778274425587/queries.sql .
+# Execute each query in Athena console
+
+
+================================================================================
+NEXT STEPS
+================================================================================
+
+IMMEDIATE (Required for full credit):
+1. Create architecture diagram showing:
+   - Lambda (EventBridge trigger) → S3 (partitioned events)
+   - S3 → Glue ETL (with job bookmarks)
+   - Glue → Bronze/Silver/Gold layers
+   - Athena querying gold tables
+   - Highlight incremental processing with bookmarks
+
+2. Write blog post (1500-2500 words) covering:
+   - Business problem and solution overview
+   - Architecture explanation (embed diagram)
+   - Design decisions (why Bronze/Silver/Gold, why job bookmarks)
+   - Alternatives considered (partition filtering, DynamoDB state, etc.)
+   - Implementation details and challenges
+   - Query design and performance
+   - Lessons learned and future improvements
+
+3. Create Google Doc:
+   - Upload blog post content
+   - Embed architecture diagram as image
+   - Enable "Anyone with link can comment"
+   - Test sharing link before submission
+
+
+================================================================================
+CONTACT INFORMATION
+================================================================================
+
+Student: Jay Sanghvi
+Email: jay.sanghavi@outlook.com
+Course: Data Engineering Capstone - Autumn 2025
+
+Last Updated: December 8, 2025
