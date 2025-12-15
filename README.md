@@ -1,5 +1,12 @@
 # Event Analytics Pipeline on AWS
 
+[![AWS](https://img.shields.io/badge/AWS-FF9900?style=for-the-badge&logo=amazon-aws&logoColor=white)](https://aws.amazon.com)
+[![Python](https://img.shields.io/badge/Python-3.8+-3776ab?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
+[![Jupyter](https://img.shields.io/badge/Jupyter-Notebook-F37726?style=flat-square&logo=jupyter&logoColor=white)](https://jupyter.org)
+[![SQL](https://img.shields.io/badge/SQL-PL%2FSQL-336791?style=flat-square&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](LICENSE)
+[![Status](https://img.shields.io/badge/Status-Production%20Ready-brightgreen?style=flat-square)](README.md)
+
 A complete cloud data pipeline built with AWS services (S3, Glue, Athena) that implements a medallion architecture (Bronze/Silver/Gold layers) to process event data and generate analytical insights.
 
 **Project Type:** AWS Data Engineering Capstone  
